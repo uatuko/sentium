@@ -5,7 +5,9 @@ package sentium.api.v1;
 import "google/api/annotations.proto";
 import "google/protobuf/struct.proto";
 
+// The service Principals manages Principals within Sentium
 service Principals {
+	// Creates a principal
 	rpc Create(PrincipalsCreateRequest) returns (Principal) {
 		option (google.api.http) = {
 			post : "/v1/principals"
@@ -13,6 +15,7 @@ service Principals {
 		};
 	}
 
+	// Deletes a principal
 	rpc Delete(PrincipalsDeleteRequest) returns (PrincipalsDeleteResponse) {
 		option (google.api.http) = {
 			delete : "/v1/principals/{id}"
@@ -20,18 +23,21 @@ service Principals {
 		};
 	}
 
+	// Lists principals
 	rpc List(PrincipalsListRequest) returns (PrincipalsListResponse) {
 		option (google.api.http) = {
 			get : "/v1/principals?segment={segment}&_limit={pagination_limit}&_start={pagination_token}"
 		};
 	}
 
+	// Retrieves a principal
 	rpc Retrieve(PrincipalsRetrieveRequest) returns (Principal) {
 		option (google.api.http) = {
 			get : "/v1/principals/{id}"
 		};
 	}
 
+	// Updates a principal
 	rpc Update(PrincipalsUpdateRequest) returns (Principal) {
 		option (google.api.http) = {
 			put : "/v1/principals/{id}"
@@ -40,46 +46,74 @@ service Principals {
 	}
 }
 
+// A principal within Sentium.
 message Principal {
+	// The ID of the principal
 	string id = 1;
 
-	optional google.protobuf.Struct attrs   = 2;
-	optional string                 segment = 3;
+	// The attributes attached to the principal
+	optional google.protobuf.Struct attrs = 2;
+	// The segment the principal is a member of.
+	optional string segment = 3;
 }
 
 message PrincipalsCreateRequest {
+	// Optional. Creates the principal with this ID.
 	optional string id = 1;
 
-	optional google.protobuf.Struct attrs   = 2;
-	optional string                 segment = 3;
+	// Optional. Creates the principal with these attributes.
+	optional google.protobuf.Struct attrs = 2;
+	// Optional. Creates the principal as a member of this segment.
+	optional string segment = 3;
 }
 
 message PrincipalsDeleteRequest {
+	// Required. The ID of the principle to delete.
 	string id = 1;
 }
 
 message PrincipalsDeleteResponse {}
 
 message PrincipalsListRequest {
+	// Optional. The segment to filter upon.
 	optional string segment = 1;
 
+	// Optional. The maximum number of principals to return. The service might return
+	// fewer than this value.
+	//
+	// If unspecified, at most 30 principals are returned.
+	//
+	// The maximum value is 30. If you use a value more than 30, it's
+	// automatically changed to 30.
 	optional uint32 pagination_limit = 2;
+	// Optional. A page token, received from a previous list principals call.
+	// Provide this parameter to retrieve the subsequent page.
+	//
+	// When paginating, the segment value should match the call that provided the
+	// page token. Passing a different value may lead to unexpected results.
 	optional string pagination_token = 3;
 }
 
 message PrincipalsListResponse {
+	// List of principals in the requested (or first) page.
 	repeated Principal principals = 1;
 
+	// You can send a token as `_start` to retrieve the next page of
+	// results. If empty, there are no subsequent pages.
 	optional string pagination_token = 2;
 }
 
 message PrincipalsRetrieveRequest {
+	// Required. ID of the principal to retrieve.
 	string id = 1;
 }
 
 message PrincipalsUpdateRequest {
+	// Required. Id of the principal to update.
 	string id = 1;
 
-	optional google.protobuf.Struct attrs   = 2;
-	optional string                 segment = 3;
+	// Optional. The updated attributes for the principal.
+	optional google.protobuf.Struct attrs = 2;
+	// Optional. The updated segment for the principal.
+	optional string segment = 3;
 }

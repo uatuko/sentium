@@ -5,7 +5,9 @@ package sentium.api.v1;
 import "google/protobuf/struct.proto";
 import "google/api/annotations.proto";
 
+// The service Authz manages the access between principals and resources.
 service Authz {
+	// Checks if a principle has access to a resource.
 	rpc Check(AuthzCheckRequest) returns (AuthzCheckResponse) {
 		option (google.api.http) = {
 			post : "/v1/authz:check"
@@ -13,6 +15,7 @@ service Authz {
 		};
 	}
 
+	// Grants a principle access to a resource.
 	rpc Grant(AuthzGrantRequest) returns (AuthzGrantResponse) {
 		option (google.api.http) = {
 			put : "/v1/authz:grant"
@@ -20,6 +23,7 @@ service Authz {
 		};
 	}
 
+	// Revokes a principle access to a resource.
 	rpc Revoke(AuthzRevokeRequest) returns (AuthzRevokeResponse) {
 		option (google.api.http) = {
 			put : "/v1/authz:revoke"
@@ -29,30 +33,42 @@ service Authz {
 }
 
 message AuthzCheckRequest {
-	string principal_id  = 1;
-	string resource_id   = 3;
+	// Required. The ID of the principal to check access from.
+	string principal_id = 1;
+	// Required. The ID of the resource to check access to.
+	string resource_id = 3;
+	// Required. The type of this resource.
 	string resource_type = 2;
 }
 
 message AuthzCheckResponse {
+	// Returns true if the Principal has access to the resource.
 	bool ok = 1;
 
+	// Attributes about the access.
 	optional google.protobuf.Struct attrs = 2;
 }
 
 message AuthzGrantRequest {
-	string principal_id  = 1;
-	string resource_id   = 3;
+	// Required. The ID of the principal to grant access from.
+	string principal_id = 1;
+	// Required. The ID of the resource to grant access to.
+	string resource_id = 3;
+	// Required. The type of this resource to grant access to.
 	string resource_type = 2;
 
+	// Optional. Sets attributes about the access.
 	optional google.protobuf.Struct attrs = 4;
 }
 
 message AuthzGrantResponse {}
 
 message AuthzRevokeRequest {
-	string principal_id  = 1;
-	string resource_id   = 3;
+	// Required. The ID of the principal to revoke access from.
+	string principal_id = 1;
+	// Required. The ID of the resource to revoke access to.
+	string resource_id = 3;
+	// Required. The type of the resource to revoke access to.
 	string resource_type = 2;
 }
 

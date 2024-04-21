@@ -5,7 +5,9 @@ package sentium.api.v1;
 import "google/protobuf/struct.proto";
 import "google/api/annotations.proto";
 
+// The service Relations manages Relationships
 service Relations {
+	// Checks if a relation exists. Returns that relation it if it does exist.
 	rpc Check(RelationsCheckRequest) returns (RelationsCheckResponse) {
 		option (google.api.http) = {
 			post : "/v1/relations:check"
@@ -13,6 +15,7 @@ service Relations {
 		};
 	}
 
+	// Creates a new relation.
 	rpc Create(RelationsCreateRequest) returns (RelationsCreateResponse) {
 		option (google.api.http) = {
 			post : "/v1/relations"
@@ -20,6 +23,7 @@ service Relations {
 		};
 	}
 
+	// Deletes a relation
 	rpc Delete(RelationsDeleteRequest) returns (RelationsDeleteResponse) {
 		option (google.api.http) = {
 			post : "/v1/relations:delete"
@@ -40,93 +44,132 @@ service Relations {
 	}
 }
 
+// An outside enitiy.
 message Entity {
 	string id   = 1;
 	string type = 2;
 }
 
+// A relation tuple.
 message Tuple {
+	// The ID space that this tuple belongs to
 	string space_id = 1;
-	string id       = 2;
+	// The ID of the tuple
+	string id = 2;
 
+	// The entity at the start of the relationship.
 	oneof left {
-		Entity left_entity       = 3;
+		// An outside entity
+		Entity left_entity = 3;
+		// A principal's ID
 		string left_principal_id = 4;
 	}
 
+	// The relation between these entities
 	string relation = 7;
 
+	// The entity at the end of the relationship.
 	oneof right {
-		Entity right_entity       = 5;
+		// An outside entity
+		Entity right_entity = 5;
+		// A principal's ID
 		string right_principal_id = 6;
 	}
 
-	optional string strand                = 8;
+	// A relation attached only to the left entity. Can be attached to other tuples when:
+	//
+	// - The other tuple's right matches this tuples left enitity.
+	// - The other tuple's relation matches this tuples strand.
+	optional string strand = 8;
+	// The attributes attached to the Tuple
 	optional google.protobuf.Struct attrs = 9;
 
+	// The reference id. Generated on computed relation tuples.
+	// References the tuple that generated it.
 	optional string ref_id = 10;
 }
 
 message RelationsCheckRequest {
+	// Required. The left entity to check for.
 	oneof left {
 		Entity left_entity       = 1;
 		string left_principal_id = 2;
 	}
 
+	// Required. The relation to check for.
 	string relation = 5;
 
+	// Required. The right entity to check for.
 	oneof right {
-		Entity right_entity       = 3;
+		// An outside entity
+		Entity right_entity = 3;
+		// A principal's ID
 		string right_principal_id = 4;
 	}
 }
 
 message RelationsCheckResponse {
-	bool   found = 1;
-	uint32 cost  = 2;
+	// Returns true if the relation tuple exists.
+	bool found = 1;
+	// The cost of the request.
+	uint32 cost = 2;
 
+	// The relation tuple, if it exists.
 	optional Tuple tuple = 3;
 }
 
 message RelationsCreateRequest {
+	// Required. The left entity of the relation tuple to create.
 	oneof left {
 		Entity left_entity       = 1;
 		string left_principal_id = 2;
 	}
 
+	// Required. The relation of the relation tuple to create.
 	string relation = 5;
 
+	// Required. The right entity of the relation tuple to create.
 	oneof right {
 		Entity right_entity       = 3;
 		string right_principal_id = 4;
 	}
 
+	// Optional. The relation tuples strand to create.
 	optional string strand = 6;
 
+	// Optional. The relation tuples attributes to create.
 	optional google.protobuf.Struct attrs = 7;
 
-	optional bool   optimise   = 8;
+	// Optional. Should we generate computed relation tuples.
+	optional bool optimise = 8;
+	// Optional. The maximum cost limit for this request.
 	optional uint32 cost_limit = 9;
 }
 
 message RelationsCreateResponse {
-	Tuple  tuple = 1;
-	uint32 cost  = 2;
+	// The relation tuple that was created.
+	Tuple tuple = 1;
+	// The cost of the request.
+	uint32 cost = 2;
 }
 
 message RelationsDeleteRequest {
+	// Required. The left entity of the relation tuple to delete.
 	oneof left {
 		Entity left_entity       = 1;
 		string left_principal_id = 2;
 	}
 
+	// Required. The relation of the relation tuple to delete.
 	string relation = 5;
 
+	// Required. The right entity of the relation tuple to delete.
 	oneof right {
 		Entity right_entity       = 3;
 		string right_principal_id = 4;
 	}
 
+	// Optional. The relation tuples strand to delete.
 	optional string strand = 6;
 }
 
